@@ -4,7 +4,8 @@
 }
 
 body {
-    background-color: #6e774e;
+    /* background-color: #6e774e; */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     text-align: center;
 }
 
@@ -40,7 +41,7 @@ body {
 #reset-btn {
     padding: 1rem;
     font-size: 0.9rem;
-    background-color: #283618;
+    background-color: #4CAF50;
     color: white;
     cursor: pointer;
     border-radius: 1rem;
