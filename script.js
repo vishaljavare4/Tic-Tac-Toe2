@@ -18,26 +18,79 @@ const winPatterns = [
     [6, 7, 8],
 ];
 
+// 🎵 SOUND FUNCTIONS
+function playWinningBeep() {
+    let ctx = new (window.AudioContext || window.webkitAudioContext)();
+    let osc1 = ctx.createOscillator();
+    let gain1 = ctx.createGain();
+    osc1.type = "sine";
+    osc1.frequency.value = 880;
+    gain1.gain.value = 0.2;
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start();
+    osc1.stop(ctx.currentTime + 0.12);
+
+    let osc2 = ctx.createOscillator();
+    let gain2 = ctx.createGain();
+    osc2.type = "sine";
+    osc2.frequency.value = 1320;
+    gain2.gain.value = 0.16;
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start(ctx.currentTime + 0.13);
+    osc2.stop(ctx.currentTime + 0.25);
+}
+
+function playLosingBeep() {
+    let ctx = new (window.AudioContext || window.webkitAudioContext)();
+    let osc = ctx.createOscillator();
+    let gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(330, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(220, ctx.currentTime + 0.4);
+    gain.gain.value = 0.20;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+}
+
+function playDrawBeep() {
+    let ctx = new (window.AudioContext || window.webkitAudioContext)();
+    let osc = ctx.createOscillator();
+    let gain = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(330, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(220, ctx.currentTime + 0.4);
+    gain.gain.value = 0.20;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+}
+
+// RESET
 const resetGame = () => {
     turnO = true;
     count = 0;
-    enableBOxes(); // The new game button clicked all the boxes enabled with the help of this function.
-    msgContainer.classList.add("hide");// Hide message container againe as soon as the game will be reset.
+    enableBoxes(); 
+    msgContainer.classList.add("hide");
 };
 
 boxes.forEach((box) => {
-    box.addEventListener("click", () => {  // Adding event listener for clicking operation on boxes.
-        if(turnO){            // If it is player O's turn, then...
+    box.addEventListener("click", () => {
+        if (turnO) {
             box.innerText = "O";
-            turnO = false; // I will set it to false, because it should not be true for the next time
-        } else {             // If player X's turn, then...
+            turnO = false;
+        } else {
             box.innerText = "X";
             turnO = true;
         }
-        box.disabled = true; // For the stick that value for that box.
+        box.disabled = true;
         count++;
-        let isWinner = checkWinner();    // For checking the winner.
-        if(count === 9 && !isWinner) {
+        let isWinner = checkWinner();
+        if (count === 9 && !isWinner) {
             Draw();
         }
     });
@@ -47,43 +100,37 @@ const Draw = () => {
     msg.innerText = `Draw!`;
     msgContainer.classList.remove("hide");
     disableBoxes();
+    playDrawBeep(); // 🎵 Draw sound
 };
 
-const disableBoxes = () => {// For disabling the boxes after showing the winner.
-    for(let box of boxes) {
+const disableBoxes = () => {
+    for (let box of boxes) {
         box.disabled = true;
     }
 };
 
-const enableBOxes = () => {// When the new game starts again then all the boxes will be enabled here.
-    for(let box of boxes) {
+const enableBoxes = () => {
+    for (let box of boxes) {
         box.disabled = false;
-        box.innerText = "";// With help of this all the boxes will be reseted, which means all the values will be removed.
+        box.innerText = "";
     }
 };
 
 const showWinner = (winner) => {
     msg.innerText = `Congratulations, Winner is ${winner}`;
     msgContainer.classList.remove("hide");
-    disableBoxes(); // After showing the winner the boxes will be disabled with the help of this function.
+    disableBoxes();
+    playWinningBeep(); // 🎵 Always play win sound for winner
 };
 
-
-
 const checkWinner = () => {
-    for(let pattern of winPatterns) {
-        // console.log(
-        //     boxes[pattern[0]].innerText, 
-        //     boxes[pattern[1]].innerText, 
-        //     boxes[pattern[2]].innerText
-        // );  // For checking the first position element 
+    for (let pattern of winPatterns) {
         let position1 = boxes[pattern[0]].innerText;
         let position2 = boxes[pattern[1]].innerText;
         let position3 = boxes[pattern[2]].innerText;
 
-        if(position1 != "" && position2 != "" && position3 != "") {
-            if(position1 === position2 && position2 === position3) {
-                // console.log("Winner is", position1);
+        if (position1 != "" && position2 != "" && position3 != "") {
+            if (position1 === position2 && position2 === position3) {
                 showWinner(position1);
                 return true;
             }
@@ -93,4 +140,3 @@ const checkWinner = () => {
 
 newGameBtn.addEventListener("click", resetGame);
 resetbtn.addEventListener("click", resetGame);
-
